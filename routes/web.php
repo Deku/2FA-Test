@@ -11,6 +11,6 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', 'TwoFactorAuthController');
+
+Route::post('/check', 'TwoFactorAuthController@check');
