@@ -11,6 +11,8 @@
 |
 */
 
-Route::get('/', 'TwoFactorAuthController');
-
-Route::post('/check', 'TwoFactorAuthController@check');
+Auth::routes();
+Route::get('/', 'HomeController');
+Route::get('/home', 'HomeController@home')->middleware('auth');
+Route::get('/generate', 'HomeController@generate')->middleware('auth');
+Route::post('/verify', 'HomeController@verify')->middleware('auth');

@@ -18,7 +18,9 @@ class CreateUsersTable extends Migration
             $table->string('name');
             $table->string('email')->unique();
             $table->string('password');
+            $table->string('salt')->default(str_random(8));
             $table->rememberToken();
+            $table->string('tfa_secret')->nullable();
             $table->timestamps();
         });
     }

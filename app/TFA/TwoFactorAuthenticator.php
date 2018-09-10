@@ -9,11 +9,16 @@ class TwoFactorAuthenticator
     protected $tfa;
     protected $issuer = "2FA Test by Deku";
     protected $secret;
+    protected $user;
 
     public function __construct()
     {
+        if (!\Auth::user())
+            throw new \Illuminate\Auth\Access\AuthorizationException();
+
+        $this->user = \Auth::user();
         $this->tfa = new \RobThree\Auth\TwoFactorAuth($this->issuer);
-        $this->secret = Session::has('tfa_secret') ? Session::get('tfa_secret') : NULL;
+        $this->secret =$this->user->tfa_secret;
     }
 
     public function getTfa()
@@ -23,11 +28,8 @@ class TwoFactorAuthenticator
 
     public function setSecret()
     {
-        if (!Session::get('tfa_secret'))
-        {
-            $this->secret = $this->tfa->createSecret(160);
-            Session::put(['tfa_secret' => $this->secret]);
-        }
+        $this->user->tfa_secret = $this->tfa->createSecret(160);
+        $this->user->update();
     }
 
     public function getSecret()
@@ -37,7 +39,7 @@ class TwoFactorAuthenticator
 
     public function getQRCode()
     {
-        return $this->tfa->getQRCodeImageAsDataUri('Deku', $this->secret);
+        return $this->tfa->getQRCodeImageAsDataUri($this->user->name, $this->secret);
     }
 
     public function verifyCode($code)
